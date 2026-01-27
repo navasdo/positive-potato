@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Positive Potato Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #fdf6e3;
+        }
+        .handwritten {
+            font-family: 'Patrick Hand', cursive;
+        }
+        .potato-skin {
+            fill: #d4a373;
+            stroke: #bc6c25;
+            stroke-width: 3;
+        }
+        .potato-shadow {
+            fill: rgba(0,0,0,0.1);
+        }
+        /* Accessories Styling */
+        .hair-fill { fill: #5d4037; }
+        .glasses-stroke { stroke: #333; fill: rgba(255,255,255,0.3); stroke-width: 3; }
+        .sunglasses-fill { fill: #333; }
+        .bow-fill { fill: #e57373; stroke: #c62828; stroke-width: 2; }
+        
+        /* Custom scrollbar for aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4a373; 
+            border-radius: 4px;
+        }
+        
+        /* Selection Button Active State */
+        .style-btn.active {
+            border-color: #d97706; /* amber-600 */
+            background-color: #fef3c7; /* amber-100 */
+            transform: scale(1.05);
+        }
+        .style-btn img {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8 px-4">
+
+    <!-- Header -->
+    <header class="text-center mb-8 animate-fade-in-down">
+        <h1 class="text-4xl md:text-5xl font-bold text-amber-800 mb-2">The Positive Potato 🥔</h1>
+        <p class="text-amber-700 text-lg">Send a spud-tacular thank you note!</p>
+    </header>
+
+    <main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        
+        <!-- EDITOR SECTION -->
+        <section class="bg-white p-6 rounded-3xl shadow-xl border-4 border-amber-100">
+            <h2 class="text-2xl font-bold text-amber-800 mb-4 flex items-center gap-2">
+                <span>✏️</span> Customize Your Potato
+            </h2>
+
+            <form id="potatoForm" onsubmit="event.preventDefault(); updatePotato();">
+                
+                <!-- To/From Inputs -->
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-amber-900 font-bold mb-1">To (Teacher's Name):</label>
+                        <input type="text" id="recipientName" placeholder="Ms. Smith" class="w-full p-3 rounded-xl border-2 border-amber-200 focus:border-amber-500 focus:outline-none transition bg-amber-50/50" oninput="updatePotato()">
+                    </div>
+
+                    <div class="flex flex-col md:flex-row md:items-end gap-4">
+                        <div class="flex-grow">
+                            <label class="block text-amber-900 font-bold mb-1">From (Your Name):</label>
+                            <input type="text" id="senderName" placeholder="Your Name" class="w-full p-3 rounded-xl border-2 border-amber-200 focus:border-amber-500 focus:outline-none transition bg-amber-50/50" oninput="updatePotato()">
+                        </div>
+                        <div class="pb-3">
+                            <label class="flex items-center cursor-pointer select-none">
+                                <input type="checkbox" id="isAnonymous" class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500 border-gray-300" onchange="toggleAnonymous()">
+                                <span class="ml-2 text-amber-800 font-medium">Make it Anonymous 🕵️</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dress Up Section -->
+                <div class="mb-6 p-4 bg-amber-50/50 rounded-2xl border-2 border-amber-100">
+                    <h3 class="text-lg font-bold text-amber-800 mb-3">🎭 Dress Up Your Potato</h3>
+                    
+                    <!-- Hair Selection -->
+                    <div class="mb-4">
+                        <label class="block text-sm text-amber-700 font-bold mb-2">Hairstyle:</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="style-btn active w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm text-2xl transition flex items-center justify-center" onclick="setAccessory('hair', 'none', this)">🥔</button>
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm text-2xl transition flex items-center justify-center" onclick="setAccessory('hair', 'spiky', this)">🧒</button>
+                            
+                            <!-- New Female Hair 1 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('hair', 'female1', this)">
+                                <img src="https://img.icons8.com/?size=400&id=NrV561TNkDPQ&format=png&color=000000" class="w-full h-full object-contain">
+                            </button>
+                            <!-- New Female Hair 2 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('hair', 'female2', this)">
+                                <img src="https://img.icons8.com/?size=400&id=zfaCXGhINkL7&format=png&color=000000" class="w-full h-full object-contain">
+                            </button>
+                            <!-- New Female Hair 3 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('hair', 'female3', this)">
+                                <img src="https://img.icons8.com/?size=400&id=ZJPpuI9G6lgC&format=png&color=000000" class="w-full h-full object-contain">
+                            </button>
+
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm text-2xl transition flex items-center justify-center" onclick="setAccessory('hair', 'bow', this)">
+                                <img src="https://img.icons8.com/?size=400&id=O21TvFteoTFt&format=png&color=000000" class="w-8 h-8 object-contain">
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hats Selection -->
+                    <div class="mb-4">
+                        <label class="block text-sm text-amber-700 font-bold mb-2">Hats:</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="style-btn active w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm text-2xl transition flex items-center justify-center" onclick="setAccessory('hat', 'none', this)">❌</button>
+                            
+                            <!-- French Hat -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('hat', 'frnclass1', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hats/frnclass1.png" class="w-full h-full object-contain">
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Eyewear Selection -->
+                    <div class="mb-4">
+                        <label class="block text-sm text-amber-700 font-bold mb-2">Eyewear:</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="style-btn active w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm text-2xl transition flex items-center justify-center" onclick="setAccessory('eyewear', 'none', this)">❌</button>
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm text-2xl transition flex items-center justify-center" onclick="setAccessory('eyewear', 'glasses', this)">👓</button>
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm text-2xl transition flex items-center justify-center" onclick="setAccessory('eyewear', 'sunglasses', this)">🕶️</button>
+                            
+                            <!-- Sci-Fi Glasses -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('eyewear', 'sci4', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/glasses/sci4.png" class="w-full h-full object-contain">
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mustache Selection -->
+                    <div class="mb-4">
+                        <label class="block text-sm text-amber-700 font-bold mb-2">Mustaches:</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="style-btn active w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm text-2xl transition flex items-center justify-center" onclick="setAccessory('mustache', 'none', this)">❌</button>
+                            
+                            <!-- Mustache 1 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('mustache', 'mustache1', this)">
+                                <img src="https://img.icons8.com/?size=400&id=jTpI9__-_xPE&format=png&color=000000" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Mustache 2 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('mustache', 'mustache2', this)">
+                                <img src="https://img.icons8.com/?size=400&id=64qE_VU6fdyy&format=png&color=000000" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Mustache 3 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('mustache', 'mustache3', this)">
+                                <img src="https://img.icons8.com/?size=400&id=5GRkro7CkbRq&format=png&color=000000" class="w-full h-full object-contain">
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Background Selection -->
+                    <div class="mb-4">
+                        <label class="block text-sm text-amber-700 font-bold mb-2">Background:</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="style-btn active w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm text-2xl transition flex items-center justify-center" onclick="setAccessory('background', 'none', this)">❌</button>
+                            
+                            <!-- CN Class -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center overflow-hidden" onclick="setAccessory('background', 'cnclass1', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/cnclass1.png" class="w-full h-full object-cover">
+                            </button>
+                            <!-- ENG 1 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center overflow-hidden" onclick="setAccessory('background', 'eng1', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/eng1.png" class="w-full h-full object-cover">
+                            </button>
+                            <!-- ENG 3 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center overflow-hidden" onclick="setAccessory('background', 'eng3', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/eng3.png" class="w-full h-full object-cover">
+                            </button>
+                            <!-- FR Class -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center overflow-hidden" onclick="setAccessory('background', 'frnclass2', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/frnclass2.png" class="w-full h-full object-cover">
+                            </button>
+                             <!-- History 2 -->
+                             <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center overflow-hidden" onclick="setAccessory('background', 'history2', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/history2.png" class="w-full h-full object-cover">
+                            </button>
+                             <!-- History 3 -->
+                             <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center overflow-hidden" onclick="setAccessory('background', 'history3', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/history3.png" class="w-full h-full object-cover">
+                            </button>
+                            <!-- Math 3 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center overflow-hidden" onclick="setAccessory('background', 'math3', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/math3.png" class="w-full h-full object-cover">
+                            </button>
+                            <!-- Sci 3 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center overflow-hidden" onclick="setAccessory('background', 'sci3', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/sci3.png" class="w-full h-full object-cover">
+                            </button>
+                            <!-- SP Class -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center overflow-hidden" onclick="setAccessory('background', 'spnclass2', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/spnclass2.png" class="w-full h-full object-cover">
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Items Selection -->
+                    <div class="mb-4">
+                        <label class="block text-sm text-amber-700 font-bold mb-2">Handheld Items:</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="style-btn active w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm text-2xl transition flex items-center justify-center" onclick="setAccessory('item', 'none', this)">❌</button>
+                            
+                            <!-- CN Class 2 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'cnclass2', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/cnclass2.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- CN Class 3 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'cnclass3', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/cnclass3.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Eng 2 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'eng2', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/eng2.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Eng 4 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'eng4', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/eng4.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Frn Class 3 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'frnclass3', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/frnclass3.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Frn Class 4 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'frnclass4', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/frnclass4.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- History 1 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'history1', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/history1.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Math 1 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'math1', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/math1.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Math 2 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'math2', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/math2.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Math 4 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'math4', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/math4.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Sci 1 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'sci1', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/sci1.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Sci 2 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'sci2', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/sci2.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Spn Class 1 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'spnclass1', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/spnclass1.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Spn Class 3 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'spnclass3', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/spnclass3.png" class="w-full h-full object-contain">
+                            </button>
+                            <!-- Spn Class 4 -->
+                            <button type="button" class="style-btn w-14 h-14 border-2 border-transparent p-2 rounded-lg bg-white shadow-sm transition flex items-center justify-center" onclick="setAccessory('item', 'spnclass4', this)">
+                                <img src="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/spnclass4.png" class="w-full h-full object-contain">
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card Style Selection -->
+                    <div>
+                        <label class="block text-sm text-amber-700 font-bold mb-2">Note Card Style:</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button type="button" class="style-btn active border-2 border-transparent p-2 rounded-lg bg-white shadow-sm text-xs font-bold transition h-10" onclick="setCardStyle('white', this)">White</button>
+                            <button type="button" class="style-btn border-2 border-transparent p-2 rounded-lg bg-yellow-100 shadow-sm text-xs font-bold transition h-10" onclick="setCardStyle('yellow', this)">Sticky</button>
+                            <button type="button" class="style-btn border-2 border-transparent p-2 rounded-lg bg-blue-100 shadow-sm text-xs font-bold transition h-10" onclick="setCardStyle('blue', this)">Blue</button>
+                            <button type="button" class="style-btn border-2 border-transparent p-2 rounded-lg bg-pink-100 shadow-sm text-xs font-bold transition h-10" onclick="setCardStyle('pink', this)">Pink</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Note Section -->
+                <div id="sectionCustom" class="mb-6">
+                    <label class="block text-amber-900 font-bold mb-2">Write your note:</label>
+                    <textarea id="customMessage" rows="4" maxlength="150" class="w-full p-3 rounded-xl border-2 border-amber-200 focus:border-amber-500 focus:outline-none transition bg-amber-50/50 resize-none" placeholder="Thank you for always helping me with math..." oninput="updatePotato()"></textarea>
+                    <p class="text-right text-xs text-amber-600 mt-1"><span id="charCount">0</span>/150</p>
+                </div>
+
+            </form>
+        </section>
+
+        <!-- PREVIEW SECTION -->
+        <div class="sticky top-8">
+            <div class="bg-white p-2 rounded-3xl shadow-xl border-4 border-amber-100 overflow-hidden">
+                <div class="bg-amber-50/50 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[400px]" id="captureArea">
+                    
+                    <!-- The Potato Card Content -->
+                    <div class="relative w-full max-w-md mx-auto aspect-square flex items-center justify-center">
+                        
+                        <!-- SVG Potato - Increased ViewBox height to accommodate lower sign -->
+                        <svg viewBox="0 0 400 430" class="w-full h-full drop-shadow-2xl">
+                            
+                            <!-- Background Layers (Behind Potato) - Framed Paintings on Wall -->
+                            <g id="bg-cnclass1" class="hidden">
+                                <!-- Nail & String -->
+                                <circle cx="85" cy="25" r="3" fill="#5d4037" />
+                                <path d="M85,25 L55,40 M85,25 L115,40" stroke="#5d4037" stroke-width="2" />
+                                <!-- Frame -->
+                                <rect x="25" y="40" width="120" height="100" fill="#f5f5f5" stroke="#5d4037" stroke-width="4" rx="2" />
+                                <!-- Image -->
+                                <image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/cnclass1.png" x="29" y="44" width="112" height="92" preserveAspectRatio="xMidYMid slice" />
+                            </g>
+
+                            <g id="bg-eng1" class="hidden">
+                                <circle cx="85" cy="25" r="3" fill="#5d4037" />
+                                <path d="M85,25 L55,40 M85,25 L115,40" stroke="#5d4037" stroke-width="2" />
+                                <rect x="25" y="40" width="120" height="100" fill="#f5f5f5" stroke="#5d4037" stroke-width="4" rx="2" />
+                                <image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/eng1.png" x="29" y="44" width="112" height="92" preserveAspectRatio="xMidYMid slice" />
+                            </g>
+                             <g id="bg-eng3" class="hidden">
+                                <circle cx="85" cy="25" r="3" fill="#5d4037" />
+                                <path d="M85,25 L55,40 M85,25 L115,40" stroke="#5d4037" stroke-width="2" />
+                                <rect x="25" y="40" width="120" height="100" fill="#f5f5f5" stroke="#5d4037" stroke-width="4" rx="2" />
+                                <image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/eng3.png" x="29" y="44" width="112" height="92" preserveAspectRatio="xMidYMid slice" />
+                            </g>
+
+                            <g id="bg-frnclass2" class="hidden">
+                                <circle cx="85" cy="25" r="3" fill="#5d4037" />
+                                <path d="M85,25 L55,40 M85,25 L115,40" stroke="#5d4037" stroke-width="2" />
+                                <rect x="25" y="40" width="120" height="100" fill="#f5f5f5" stroke="#5d4037" stroke-width="4" rx="2" />
+                                <image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/frnclass2.png" x="29" y="44" width="112" height="92" preserveAspectRatio="xMidYMid slice" />
+                            </g>
+
+                             <g id="bg-history2" class="hidden">
+                                <circle cx="85" cy="25" r="3" fill="#5d4037" />
+                                <path d="M85,25 L55,40 M85,25 L115,40" stroke="#5d4037" stroke-width="2" />
+                                <rect x="25" y="40" width="120" height="100" fill="#f5f5f5" stroke="#5d4037" stroke-width="4" rx="2" />
+                                <image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/history2.png" x="29" y="44" width="112" height="92" preserveAspectRatio="xMidYMid slice" />
+                            </g>
+
+                             <g id="bg-history3" class="hidden">
+                                <circle cx="85" cy="25" r="3" fill="#5d4037" />
+                                <path d="M85,25 L55,40 M85,25 L115,40" stroke="#5d4037" stroke-width="2" />
+                                <rect x="25" y="40" width="120" height="100" fill="#f5f5f5" stroke="#5d4037" stroke-width="4" rx="2" />
+                                <image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/history3.png" x="29" y="44" width="112" height="92" preserveAspectRatio="xMidYMid slice" />
+                            </g>
+                             <g id="bg-math3" class="hidden">
+                                <circle cx="85" cy="25" r="3" fill="#5d4037" />
+                                <path d="M85,25 L55,40 M85,25 L115,40" stroke="#5d4037" stroke-width="2" />
+                                <rect x="25" y="40" width="120" height="100" fill="#f5f5f5" stroke="#5d4037" stroke-width="4" rx="2" />
+                                <image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/math3.png" x="29" y="44" width="112" height="92" preserveAspectRatio="xMidYMid slice" />
+                            </g>
+                             <g id="bg-sci3" class="hidden">
+                                <circle cx="85" cy="25" r="3" fill="#5d4037" />
+                                <path d="M85,25 L55,40 M85,25 L115,40" stroke="#5d4037" stroke-width="2" />
+                                <rect x="25" y="40" width="120" height="100" fill="#f5f5f5" stroke="#5d4037" stroke-width="4" rx="2" />
+                                <image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/sci3.png" x="29" y="44" width="112" height="92" preserveAspectRatio="xMidYMid slice" />
+                            </g>
+
+                            <g id="bg-spnclass2" class="hidden">
+                                <!-- Nail & String -->
+                                <circle cx="85" cy="25" r="3" fill="#5d4037" />
+                                <path d="M85,25 L55,40 M85,25 L115,40" stroke="#5d4037" stroke-width="2" />
+                                <!-- Frame -->
+                                <rect x="25" y="40" width="120" height="100" fill="#f5f5f5" stroke="#5d4037" stroke-width="4" rx="2" />
+                                <!-- Image -->
+                                <image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/bg-items/spnclass2.png" x="29" y="44" width="112" height="92" preserveAspectRatio="xMidYMid slice" />
+                            </g>
+
+                            <!-- Shadow -->
+                            <ellipse cx="200" cy="360" rx="140" ry="20" class="potato-shadow" />
+                            
+                            <!-- Body -->
+                            <path d="M100,150 C80,250 120,350 200,350 C280,350 320,250 300,150 C280,50 120,50 100,150 Z" class="potato-skin" />
+                            
+                            <!-- Dots/Texture -->
+                            <circle cx="150" cy="120" r="2" fill="#bc6c25" opacity="0.6"/>
+                            <circle cx="250" cy="280" r="3" fill="#bc6c25" opacity="0.6"/>
+                            <circle cx="120" cy="220" r="2" fill="#bc6c25" opacity="0.6"/>
+
+                            <!-- Note: Removed the old hair-bob back layer -->
+
+                            <!-- Eyes -->
+                            <circle cx="160" cy="180" r="8" fill="#3e2723" />
+                            <circle cx="240" cy="180" r="8" fill="#3e2723" />
+                            <!-- Blush -->
+                            <circle cx="160" cy="200" r="10" fill="#ff8a80" opacity="0.6" />
+                            <circle cx="240" cy="200" r="10" fill="#ff8a80" opacity="0.6" />
+                            
+                            <!-- ========== FACE EXTRAS ========== -->
+                            <!-- Glasses -->
+                            <g id="face-glasses" class="hidden">
+                                <circle cx="160" cy="180" r="25" class="glasses-stroke" fill="none" />
+                                <circle cx="240" cy="180" r="25" class="glasses-stroke" fill="none" />
+                                <line x1="185" y1="180" x2="215" y2="180" stroke="#333" stroke-width="3" />
+                            </g>
+                            <!-- Sunglasses -->
+                            <g id="face-sunglasses" class="hidden">
+                                <path d="M130,170 Q160,160 190,170 L190,190 Q160,200 130,190 Z" class="sunglasses-fill" />
+                                <path d="M210,170 Q240,160 270,170 L270,190 Q240,200 210,190 Z" class="sunglasses-fill" />
+                                <line x1="190" y1="175" x2="210" y2="175" stroke="#333" stroke-width="3" />
+                            </g>
+                            
+                            <!-- Sci-Fi Glasses - Centered over eyes -->
+                            <g id="face-sci4" class="hidden">
+                                <image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/glasses/sci4.png" x="-40" y="55" width="480" height="200" preserveAspectRatio="xMidYMid meet" />
+                            </g>
+                            
+                            <!-- Mustache 1: Thin/Curly -->
+                            <g id="face-mustache1" class="hidden">
+                                <image href="https://img.icons8.com/?size=400&id=jTpI9__-_xPE&format=png&color=000000" x="150" y="190" width="100" height="40" />
+                            </g>
+                             <!-- Mustache 2: Thick -->
+                            <g id="face-mustache2" class="hidden">
+                                <image href="https://img.icons8.com/?size=400&id=64qE_VU6fdyy&format=png&color=000000" x="160" y="190" width="80" height="40" />
+                            </g>
+                            <!-- Mustache 3: Handlebar -->
+                            <g id="face-mustache3" class="hidden">
+                                <image href="https://img.icons8.com/?size=400&id=5GRkro7CkbRq&format=png&color=000000" x="150" y="185" width="100" height="50" />
+                            </g>
+
+
+                            <!-- Smile (Visible underneath or slightly adjusted) -->
+                            <path id="potato-smile" d="M185,200 Q200,215 215,200" fill="none" stroke="#3e2723" stroke-width="4" stroke-linecap="round" />
+
+                            <!-- ========== HAIR LAYERS (Front) ========== -->
+                            <g id="hair-spiky" class="hidden">
+                                <path d="M130,100 L150,60 L170,90 L200,50 L230,90 L250,60 L270,100 Q200,80 130,100 Z" class="hair-fill" />
+                            </g>
+                            
+                            <!-- New Female Hair 1 (Long/Bangs) - Scaled Up -->
+                            <g id="hair-female1" class="hidden">
+                                <!-- Increased width to 280 (was 200), adjusted X to 60 to center, Y to -20 to move up -->
+                                <image href="https://img.icons8.com/?size=400&id=NrV561TNkDPQ&format=png&color=000000" x="60" y="-20" width="280" height="250" />
+                            </g>
+                            <!-- New Female Hair 2 (Pigtails/Buns) - Scaled Up -->
+                            <g id="hair-female2" class="hidden">
+                                <!-- Increased width to 300 (was 220), adjusted X to 50, Y to -20 -->
+                                <image href="https://img.icons8.com/?size=400&id=zfaCXGhINkL7&format=png&color=000000" x="50" y="-20" width="300" height="250" />
+                            </g>
+                            <!-- New Female Hair 3 (Updo) - Scaled Up -->
+                            <g id="hair-female3" class="hidden">
+                                <!-- Increased width to 280 (was 200), adjusted X to 60, Y to -30 -->
+                                <image href="https://img.icons8.com/?size=400&id=ZJPpuI9G6lgC&format=png&color=000000" x="60" y="-30" width="280" height="250" />
+                            </g>
+
+                            <g id="hair-bow" class="hidden">
+                                <image href="https://img.icons8.com/?size=400&id=O21TvFteoTFt&format=png&color=000000" x="140" y="20" height="120" width="120" />
+                            </g>
+
+                            <!-- Hats Layer -->
+                            <g id="hat-frnclass1" class="hidden">
+                                <image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hats/frnclass1.png" x="85" y="0" width="230" height="150" preserveAspectRatio="xMidYMid meet" />
+                            </g>
+
+
+                            <!-- Arms - Adjusted Left Arm to make room, Right Arm tailored for items if needed -->
+                            <!-- Left Arm (Holding Sign) - Moved slightly left -->
+                            <path d="M110,220 Q80,250 85,285" fill="none" stroke="#bc6c25" stroke-width="8" stroke-linecap="round" />
+                            
+                            <!-- Right Arm (Dynamic based on item?) - Keeping standard for now, items will float near it -->
+                            <path d="M290,220 Q320,250 315,285" fill="none" stroke="#bc6c25" stroke-width="8" stroke-linecap="round" />
+
+                            <!-- The Sign (Paper) - Moved Left to X=25 (was 65) to make room on right -->
+                            <g transform="translate(25, 245)">
+                                <!-- Card Base -->
+                                <rect id="cardBase" x="0" y="0" width="270" height="160" rx="5" fill="#ffffff" stroke="#e0e0e0" stroke-width="1" transform="rotate(-2, 135, 80)" />
+                                <!-- Tape at top -->
+                                <rect x="115" y="-10" width="40" height="15" fill="#e0e0e0" opacity="0.7" transform="rotate(-2, 135, 80)" />
+                            </g>
+                            
+                            <!-- Handheld Items Layer -->
+                            <g id="item-cnclass2" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/cnclass2.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-cnclass3" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/cnclass3.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-eng2" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/eng2.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-eng4" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/eng4.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-frnclass3" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/frnclass3.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-frnclass4" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/frnclass4.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-history1" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/history1.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-math1" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/math1.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-math2" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/math2.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-math4" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/math4.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-sci1" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/sci1.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-sci2" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/sci2.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-spnclass1" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/spnclass1.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-spnclass3" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/spnclass3.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+                            <g id="item-spnclass4" class="hidden"><image href="https://raw.githubusercontent.com/navasdo/positive-potato/refs/heads/main/hand-items/spnclass4.png" x="280" y="230" width="90" height="90" preserveAspectRatio="xMidYMid meet" /></g>
+
+                        </svg>
+
+                        <!-- Overlay Text -->
+                        <div class="absolute inset-0 pointer-events-none">
+                            <!-- Adjusted Left Position for new Sign Location -->
+                            <!-- Old left was 17%, shifted sign left by 40px (approx 10% of 400 width) -->
+                            <!-- New Left approx 7% -->
+                            <div class="absolute top-[58%] left-[7%] w-[66%] h-[35.3%] flex items-center justify-center -rotate-2">
+                                <div class="handwritten text-center text-gray-800 w-full px-2 pb-3 flex flex-col justify-center h-full">
+                                    <div class="font-bold text-lg leading-none mb-1" id="previewTo">To: Teacher</div>
+                                    
+                                    <div class="flex-grow flex items-center justify-center py-1">
+                                        <div class="text-sm md:text-base border-t border-b border-dashed border-gray-300 w-full py-1 leading-tight break-words">
+                                            <span id="previewMessage">You are amazing!</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="font-bold text-lg leading-none mt-1" id="previewFrom">From: Student</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-6 px-4 w-full max-w-sm">
+                        <div class="bg-white/60 border-2 border-amber-200 rounded-xl p-3 shadow-sm backdrop-blur-sm">
+                            <p class="text-amber-900 text-sm font-bold">
+                                You've received a Positive Potato! 🥔
+                            </p>
+                            <p class="text-amber-800 text-xs mt-1">
+                                A student gifted this to you because they think you are absolutely <span class="font-bold text-amber-600">spud-tacular!</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex flex-col items-center gap-3">
+                <button onclick="downloadPotato()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform hover:-translate-y-1 transition flex items-center justify-center gap-2 text-lg">
+                    <span>📸</span> Save Positive Potato
+                </button>
+                <p class="text-sm text-gray-500">Click to save an image you can share!</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // State for Accessories
+        let currentHair = 'none';
+        let currentHat = 'none';
+        let currentEyewear = 'none';
+        let currentMustache = 'none';
+        let currentBackground = 'none';
+        let currentItem = 'none';
+        let currentCardColor = '#ffffff';
+
+        // Initial setup
+        window.onload = function() {
+            updatePotato();
+        }
+
+        // Toggle Accessories
+        function setAccessory(type, value, btnElement) {
+            // Update active state of buttons within the specific category container
+            const parentDiv = btnElement.parentElement;
+            const buttons = parentDiv.querySelectorAll('.style-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            if (type === 'hair') {
+                // Hide all hair (updated list)
+                ['hair-spiky', 'hair-female1', 'hair-female2', 'hair-female3', 'hair-bow'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
+                // Show selected
+                if (value !== 'none') {
+                    document.getElementById(`hair-${value}`).classList.remove('hidden');
+                }
+                currentHair = value;
+            } else if (type === 'hat') {
+                // Hide all hats
+                ['hat-frnclass1'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
+                // Show selected
+                if (value !== 'none') {
+                    document.getElementById(`hat-${value}`).classList.remove('hidden');
+                }
+                currentHat = value;
+            } else if (type === 'eyewear') {
+                // Hide all eyewear
+                ['face-glasses', 'face-sunglasses', 'face-sci4'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
+                // Show selected
+                if (value !== 'none') {
+                    document.getElementById(`face-${value}`).classList.remove('hidden');
+                }
+                currentEyewear = value;
+            } else if (type === 'mustache') {
+                // Hide all mustaches
+                ['face-mustache1', 'face-mustache2', 'face-mustache3'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
+                
+                // Show selected
+                if (value !== 'none') {
+                    document.getElementById(`face-${value}`).classList.remove('hidden');
+                }
+
+                // Toggle smile based on mustache selection (hide smile if any mustache is selected)
+                const smile = document.getElementById('potato-smile');
+                if (value !== 'none') {
+                    smile.classList.add('hidden');
+                } else {
+                    smile.classList.remove('hidden');
+                }
+                
+                currentMustache = value;
+            } else if (type === 'background') {
+                // Hide all backgrounds
+                ['bg-cnclass1', 'bg-eng1', 'bg-eng3', 'bg-frnclass2', 'bg-history2', 'bg-history3', 'bg-math3', 'bg-sci3', 'bg-spnclass2'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
+                
+                // Show selected
+                if (value !== 'none') {
+                    document.getElementById(`bg-${value}`).classList.remove('hidden');
+                }
+                
+                currentBackground = value;
+            } else if (type === 'item') {
+                // Hide all items
+                const itemIds = [
+                    'item-cnclass2', 'item-cnclass3', 
+                    'item-eng2', 'item-eng4', 
+                    'item-frnclass3', 'item-frnclass4', 
+                    'item-history1', 
+                    'item-math1', 'item-math2', 'item-math4', 
+                    'item-sci1', 'item-sci2', 
+                    'item-spnclass1', 'item-spnclass3', 'item-spnclass4'
+                ];
+                itemIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) el.classList.add('hidden');
+                });
+                
+                // Show selected
+                if (value !== 'none') {
+                    const el = document.getElementById(`item-${value}`);
+                    if(el) el.classList.remove('hidden');
+                }
+                currentItem = value;
+            }
+        }
+
+        function setCardStyle(style, btnElement) {
+             // Update active state of buttons
+            const parentDiv = btnElement.parentElement;
+            const buttons = parentDiv.querySelectorAll('.style-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            const card = document.getElementById('cardBase');
+            if (style === 'white') {
+                card.setAttribute('fill', '#ffffff');
+            } else if (style === 'yellow') {
+                card.setAttribute('fill', '#fef3c7'); // amber-100
+            } else if (style === 'blue') {
+                card.setAttribute('fill', '#dbeafe'); // blue-100
+            } else if (style === 'pink') {
+                card.setAttribute('fill', '#fce7f3'); // pink-100
+            }
+        }
+
+        function toggleAnonymous() {
+            const isAnon = document.getElementById('isAnonymous').checked;
+            const senderInput = document.getElementById('senderName');
+            
+            if (isAnon) {
+                senderInput.disabled = true;
+                senderInput.classList.add('opacity-50', 'cursor-not-allowed');
+                senderInput.value = ''; 
+            } else {
+                senderInput.disabled = false;
+                senderInput.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+            updatePotato();
+        }
+
+        function updatePotato() {
+            // Get Values
+            const recipient = document.getElementById('recipientName').value.trim();
+            const isAnon = document.getElementById('isAnonymous').checked;
+            const sender = document.getElementById('senderName').value.trim();
+            
+            // Update To/From
+            document.getElementById('previewTo').textContent = recipient ? `To: ${recipient}` : "To: Teacher";
+            
+            if (isAnon) {
+                document.getElementById('previewFrom').textContent = "From: A Student";
+            } else {
+                document.getElementById('previewFrom').textContent = sender ? `From: ${sender}` : "From: Student";
+            }
+
+            // Update Message
+            const messageEl = document.getElementById('previewMessage');
+            const customText = document.getElementById('customMessage').value.trim();
+            
+            // Update char count
+            document.getElementById('charCount').textContent = customText.length;
+            messageEl.textContent = customText || "Write your note here...";
+        }
+
+        async function downloadPotato() {
+            const captureArea = document.getElementById('captureArea');
+            const btn = document.querySelector('button[onclick="downloadPotato()"]');
+            
+            // Visual feedback
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "<span>⏳</span> Packing Potato...";
+            btn.disabled = true;
+
+            try {
+                // 1. Convert all visible external SVG images to Base64
+                // This bypasses CORS issues during the canvas render
+                const svgImages = captureArea.querySelectorAll('image');
+                const originalHrefs = new Map();
+
+                await Promise.all(Array.from(svgImages).map(async (img) => {
+                    const src = img.getAttribute('href');
+                    // Only process external links if they are visible (optimization)
+                    if (src && src.startsWith('http') && !img.closest('.hidden')) {
+                        try {
+                            // Fetch as blob with no-cache to avoid getting a cached response without CORS headers
+                            const response = await fetch(src, { cache: 'no-cache', mode: 'cors' });
+                            const blob = await response.blob();
+                            
+                            // Convert to Base64
+                            const base64 = await new Promise((resolve) => {
+                                const reader = new FileReader();
+                                reader.onloadend = () => resolve(reader.result);
+                                reader.readAsDataURL(blob);
+                            });
+
+                            // Store original and swap
+                            originalHrefs.set(img, src);
+                            img.setAttribute('href', base64);
+                        } catch (e) {
+                            console.warn("Failed to inline image:", src, e);
+                        }
+                    }
+                }));
+
+                // 2. Capture
+                const canvas = await html2canvas(captureArea, {
+                    scale: 2,
+                    backgroundColor: null,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
+                });
+
+                // 3. Revert images back to URLs (clean up)
+                originalHrefs.forEach((src, img) => {
+                    img.setAttribute('href', src);
+                });
+
+                // 4. Save
+                const link = document.createElement('a');
+                link.download = 'positive-potato.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                // Reset button
+                btn.innerHTML = "<span>✅</span> Saved!";
+            } catch (err) {
+                console.error(err);
+                alert("Oops! The potato was too hot to handle (Image Error). Try taking a screenshot manually!");
+            } finally {
+                 setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
